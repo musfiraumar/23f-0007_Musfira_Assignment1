@@ -8,5 +8,13 @@ builder.Services.AddDbContext<AppDbContext>(o =>
      .UseSnakeCaseNamingConvention());
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DbSeeder.SeedAsync(db);
+}
+
 app.MapGet("/", () => "MarksApi running");
 app.Run();
