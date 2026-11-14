@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{studentToken}}"
+scripts:
+  - type: afterResponse
+    code: "// 4 list-courses-as-student\r
+
+      pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"Student can see the seeded courses\", () => pm.expect(pm.response.json().totalCount).to.be.at.least(3));"
+    language: text/javascript
+order: 4000

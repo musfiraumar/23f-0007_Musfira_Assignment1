@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+body:
+  type: json
+  content: '{ "username": "teacher1", "password": "Teacher@123" }'
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"Body has token and role Teacher\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j.token).to.be.a(\"string\");\r
+
+      \    pm.expect(j.role).to.eql(\"Teacher\");\r
+
+      });\r
+
+      pm.environment.set(\"token\", pm.response.json().token);"
+    language: text/javascript
+order: 6000

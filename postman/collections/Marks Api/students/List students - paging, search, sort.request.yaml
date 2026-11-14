@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students?page=1&pageSize=100&sort=-fullName&search=ali"
+method: GET
+queryParams:
+  page: "1"
+  pageSize: "100"
+  sort: -fullName
+  search: ali
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"pageSize is capped at 50 and search found Ali\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j.pageSize).to.eql(50);\r
+
+      \    pm.expect(j.items.map(s => s.fullName)).to.include(\"Ali Raza\");\r
+
+      });"
+    language: text/javascript
+order: 4000

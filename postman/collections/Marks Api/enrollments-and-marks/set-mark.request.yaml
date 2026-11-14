@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/api/enrollments/{{enrollmentId}}/mark"
+method: PUT
+body:
+  type: json
+  content: '{ "mark": 80 }'
+scripts:
+  - type: afterResponse
+    code: "// 6 set-mark\r
+
+      pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"Mark is saved\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j.mark).to.eql(80);\r
+
+      \    pm.expect(j.id).to.eql(Number(pm.collectionVariables.get(\"enrollmentId\")));\r
+
+      });"
+    language: text/javascript
+order: 5000

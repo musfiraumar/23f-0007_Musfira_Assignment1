@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students"
+method: POST
+body:
+  type: json
+  content: '{ "registrationNo": "SMOKE-ENR", "fullName": "Enroll Test", "email": "enroll.test@example.com" }'
+scripts:
+  - type: afterResponse
+    code: "// 1 setup-student\r
+
+      pm.test(\"Status is 201\", () => pm.response.to.have.status(201));\r
+
+      pm.test(\"Body has an id\", () => pm.expect(pm.response.json().id).to.be.a(\"number\"));\r
+
+      pm.collectionVariables.set(\"enrStudentId\", pm.response.json().id);"
+    language: text/javascript
+order: 1000

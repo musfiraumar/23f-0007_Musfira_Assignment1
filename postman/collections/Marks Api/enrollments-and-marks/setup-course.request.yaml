@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses"
+method: POST
+body:
+  type: json
+  content: '{ "code": "ENR1", "title": "Enrollment Test", "creditHours": 2 }'
+scripts:
+  - type: afterResponse
+    code: "// 2 setup-course\r
+
+      pm.test(\"Status is 201\", () => pm.response.to.have.status(201));\r
+
+      pm.test(\"Body has an id\", () => pm.expect(pm.response.json().id).to.be.a(\"number\"));\r
+
+      pm.collectionVariables.set(\"enrCourseId\", pm.response.json().id);"
+    language: text/javascript
+order: 2000

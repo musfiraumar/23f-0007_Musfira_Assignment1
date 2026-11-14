@@ -1,0 +1,16 @@
+$kind: collection
+variables:
+  aliId: ""
+  saraId: ""
+  studentId: ""
+  courseId: ""
+  cs401Id: ""
+  enrStudentId: ""
+  enrCourseId: ""
+  enrollmentId: ""
+auth:
+  - id: 10b218c8-1f26-47ae-b260-938b8b3f82ca
+    type: bearer
+    name: Bearer Token
+    credentials:
+      token: "{{token}}"

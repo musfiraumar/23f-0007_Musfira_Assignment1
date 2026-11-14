@@ -1,0 +1,50 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students/{{aliId}}/transcript"
+method: GET
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      \r
+
+      const t = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Has all fields\", () => {\r
+
+      \    [\"studentId\",\"registrationNo\",\"fullName\",\"courses\",\"gradedCreditHours\",\"weightedAverage\"]\r
+
+      \        .forEach(k => pm.expect(t).to.have.property(k));\r
+
+      });\r
+
+      pm.test(\"Weighted average matches the courses\", () => {\r
+
+      \    const graded = t.courses.filter(c => c.mark !== null);\r
+
+      \    const credits = graded.reduce((s, c) => s + c.creditHours, 0);\r
+
+      \    pm.expect(t.gradedCreditHours).to.eql(credits);\r
+
+      \    if (credits === 0) {\r
+
+      \        pm.expect(t.weightedAverage).to.eql(null);\r
+
+      \    } else {\r
+
+      \        const expected = graded.reduce((s, c) => s + c.mark * c.creditHours, 0) / credits;\r
+
+      \        pm.expect(t.weightedAverage).to.be.closeTo(expected, 0.01);\r
+
+      \    }\r
+
+      });\r
+
+      pm.test(\"Ungraded courses have null passed\", () => {\r
+
+      \    t.courses.filter(c => c.mark === null).forEach(c => pm.expect(c.passed).to.eql(null));\r
+
+      });"
+    language: text/javascript
+order: 2000

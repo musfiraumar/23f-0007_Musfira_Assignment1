@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+body:
+  type: json
+  content: ""
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));\r
+
+      pm.test(\"Errors name the missing fields\", () => pm.expect(pm.response.json().errors).to.have.property(\"username\"));"
+    language: text/javascript
+order: 3000

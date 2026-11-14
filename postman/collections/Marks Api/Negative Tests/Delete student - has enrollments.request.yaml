@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students/{{aliId}}"
+method: DELETE
+auth:
+  type: inherit
+  credentials:
+    id: 10b218c8-1f26-47ae-b260-938b8b3f82ca
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));\r
+
+      pm.test(\"Body explains the student cannot be deleted\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j.status).to.eql(409);\r
+
+      \    pm.expect(j.title).to.eql(\"Student cannot be deleted\");\r
+
+      });"
+    language: text/javascript
+order: 9000

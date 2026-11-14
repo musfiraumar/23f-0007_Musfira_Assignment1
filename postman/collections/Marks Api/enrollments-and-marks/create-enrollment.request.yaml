@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses/{{enrCourseId}}/enrollments"
+method: POST
+body:
+  type: json
+  content: '{ "studentId": {{enrStudentId}} }'
+scripts:
+  - type: afterResponse
+    code: "// 3 create-enrollment\r
+
+      pm.test(\"Status is 201\", () => pm.response.to.have.status(201));\r
+
+      pm.test(\"Location header and no mark yet\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/enrollments/\" + j.id);\r
+
+      \    pm.expect(j.studentId).to.eql(Number(pm.collectionVariables.get(\"enrStudentId\")));\r
+
+      \    pm.expect(j.mark).to.eql(null);\r
+
+      });\r
+
+      pm.collectionVariables.set(\"enrollmentId\", pm.response.json().id);"
+    language: text/javascript
+order: 3000

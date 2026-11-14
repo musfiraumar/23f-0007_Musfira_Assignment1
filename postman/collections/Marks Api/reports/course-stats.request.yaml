@@ -1,0 +1,42 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses/{{cs401Id}}/stats"
+method: GET
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      \r
+
+      const s = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Has all fields\", () => {\r
+
+      \    [\"courseId\",\"courseCode\",\"enrolled\",\"graded\",\"average\",\"highest\",\"lowest\",\"passed\"]\r
+
+      \        .forEach(k => pm.expect(s).to.have.property(k));\r
+
+      });\r
+
+      pm.test(\"Numbers are consistent\", () => {\r
+
+      \    pm.expect(s.graded).to.be.at.most(s.enrolled);\r
+
+      \    pm.expect(s.passed).to.be.at.most(s.graded);\r
+
+      \    if (s.graded === 0) {\r
+
+      \        pm.expect(s.average).to.eql(null);\r
+
+      \    } else {\r
+
+      \        pm.expect(s.lowest).to.be.at.most(s.average);\r
+
+      \        pm.expect(s.average).to.be.at.most(s.highest);\r
+
+      \    }\r
+
+      });"
+    language: text/javascript
+order: 1000

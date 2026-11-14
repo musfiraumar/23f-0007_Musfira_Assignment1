@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses/{{courseId}}"
+method: PUT
+body:
+  type: json
+  content: '{ "code": "SMK101", "title": "Smoke Course Updated", "creditHours": 4 }'
+scripts:
+  - type: afterResponse
+    code: "// 5 update-course\r
+
+      pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"Title and credit hours updated\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j.title).to.eql(\"Smoke Course Updated\");\r
+
+      \    pm.expect(j.creditHours).to.eql(4);\r
+
+      });"
+    language: text/javascript
+order: 5000

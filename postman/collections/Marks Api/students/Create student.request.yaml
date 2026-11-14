@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students"
+method: POST
+body:
+  type: json
+  content: '{ "registrationNo": "SMOKE-001", "fullName": "Test One", "email": "Test.One@Example.com" }'
+auth:
+  type: bearer
+  credentials:
+    token: "{{token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));\r
+
+      pm.test(\"Location header points to the new student\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/students/\" + j.id);\r
+
+      \    pm.expect(j.email).to.eql(\"test.one@example.com\");\r
+
+      });\r
+
+      pm.collectionVariables.set(\"studentId\", pm.response.json().id);"
+    language: text/javascript
+order: 1000

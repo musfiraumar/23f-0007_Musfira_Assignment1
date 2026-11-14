@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students"
+method: GET
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"Body has the paged shape\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j).to.have.all.keys(\"items\", \"page\", \"pageSize\", \"totalCount\");\r
+
+      \    pm.expect(j.items).to.be.an(\"array\");\r
+
+      \    pm.expect(j.page).to.eql(1);\r
+
+      \    pm.expect(j.pageSize).to.eql(10);\r
+
+      });"
+    language: text/javascript
+order: 3000

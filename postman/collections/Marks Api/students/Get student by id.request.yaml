@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students/{{studentId}}\t"
+method: GET
+body:
+  type: json
+  content: ""
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"Body has the student id\", () => {\r
+
+      \    pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get(\"studentId\")));\r
+
+      });"
+    language: text/javascript
+order: 2000

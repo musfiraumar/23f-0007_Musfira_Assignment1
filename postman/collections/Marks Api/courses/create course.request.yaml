@@ -1,0 +1,29 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses"
+method: POST
+body:
+  type: json
+  content: '{ "code": "SMK101", "title": "Smoke Course", "creditHours": 3 }'
+auth:
+  type: inherit
+  credentials:
+    id: 10b218c8-1f26-47ae-b260-938b8b3f82ca
+scripts:
+  - type: afterResponse
+    code: "// 1 create-course\r
+
+      pm.test(\"Status is 201\", () => pm.response.to.have.status(201));\r
+
+      pm.test(\"Location header and uppercase code\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/api/courses/\" + j.id);\r
+
+      \    pm.expect(j.code).to.eql(\"SMK101\");\r
+
+      });\r
+
+      pm.collectionVariables.set(\"courseId\", pm.response.json().id);"
+    language: text/javascript
+order: 1000

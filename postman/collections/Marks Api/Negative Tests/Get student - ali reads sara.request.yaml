@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students/{{saraId}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{studentToken}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 403\", () => pm.response.to.have.status(403));\r
+
+      pm.test(\"Body is problem details with 403\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j.status).to.eql(403);\r
+
+      \    pm.expect(j.title).to.eql(\"Forbidden\");\r
+
+      });"
+    language: text/javascript
+order: 6000

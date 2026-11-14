@@ -1,0 +1,21 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students/{{saraId}}"
+method: PUT
+body:
+  type: json
+  content: '{ "registrationNo": "CS-2022-001", "fullName": "Sara Khan", "email": "sara.khan@example.com" }'
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));\r
+
+      pm.test(\"Body is problem details for a duplicate\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j.status).to.eql(409);\r
+
+      \    pm.expect(j.title).to.eql(\"Duplicate student\");\r
+
+      });"
+    language: text/javascript
+order: 8000

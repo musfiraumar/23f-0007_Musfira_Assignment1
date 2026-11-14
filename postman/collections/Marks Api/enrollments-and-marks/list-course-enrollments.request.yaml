@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses/{{enrCourseId}}/enrollments"
+method: GET
+scripts:
+  - type: afterResponse
+    code: "// 5 list-course-enrollments\r
+
+      pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"Paged shape with the new student\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j).to.have.all.keys(\"items\", \"page\", \"pageSize\", \"totalCount\");\r
+
+      \    pm.expect(j.totalCount).to.eql(1);\r
+
+      \    pm.expect(j.items[0].registrationNo).to.eql(\"SMOKE-ENR\");\r
+
+      });"
+    language: text/javascript
+order: 4000

@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses/{{courseId}}"
+method: DELETE
+scripts:
+  - type: afterResponse
+    code: "// 6 delete-course\r
+
+      pm.test(\"Status is 204\", () => pm.response.to.have.status(204));\r
+
+      pm.test(\"Body is empty\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+    language: text/javascript
+order: 6000

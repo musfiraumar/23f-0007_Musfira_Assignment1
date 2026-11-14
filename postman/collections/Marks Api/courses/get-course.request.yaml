@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{baseUrl}}/api/courses/{{courseId}}"
+method: GET
+scripts:
+  - type: afterResponse
+    code: "// 2 get-course\r
+
+      pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"Body has the course\", () => {\r
+
+      \    const j = pm.response.json();\r
+
+      \    pm.expect(j.id).to.eql(Number(pm.collectionVariables.get(\"courseId\")));\r
+
+      \    pm.expect(j.creditHours).to.eql(3);\r
+
+      });"
+    language: text/javascript
+order: 2000

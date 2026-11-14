@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/api/students/{{aliId}}/transcript"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{studentToken}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r
+
+      pm.test(\"It is Ali's transcript\", () => {\r
+
+      \    pm.expect(pm.response.json().studentId).to.eql(Number(pm.collectionVariables.get(\"aliId\")));\r
+
+      });"
+    language: text/javascript
+order: 3000
