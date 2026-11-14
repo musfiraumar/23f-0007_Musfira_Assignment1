@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,17 @@ builder.Services
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("TeacherOnly", p => p.RequireRole("Teacher"));
 
+// CORS (allowed origins come from configuration)
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
+    p.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod()));
+
+// Health checks
+builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database");
+
+// API docs
+builder.Services.AddOpenApi();
+
 // Errors
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -57,7 +69,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Services
 builder.Services.AddSingleton<PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IStudentService, StudentService>(); 
+builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IReportService, ReportService>();
@@ -69,15 +81,40 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await DbSeeder.SeedAsync(db);
+
+    app.MapOpenApi();            // /openapi/v1.json
+    app.MapScalarApiReference(); // /scalar/v1
 }
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapStudentEndpoints(); 
-app.MapCourseEndpoints(); 
-app.MapEnrollmentEndpoints();     
+
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResponseWriter = async (ctx, report) =>
+    {
+        if (report.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy)
+        {
+            await ctx.Response.WriteAsJsonAsync(new { status = "Healthy" });
+        }
+        else
+        {
+            // Keep the rule "every error is ProblemDetails"
+            await Results.Problem(
+                statusCode: StatusCodes.Status503ServiceUnavailable,
+                title: "Service unavailable",
+                detail: "A dependency (the database) is not healthy.").ExecuteAsync(ctx);
+        }
+    }
+}).AllowAnonymous();
+
+app.MapStudentEndpoints();
+app.MapCourseEndpoints();
+app.MapEnrollmentEndpoints();
 app.MapReportEndpoints();
 
 app.MapGet("/", () => "MarksApi running");
