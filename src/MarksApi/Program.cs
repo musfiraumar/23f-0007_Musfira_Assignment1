@@ -58,6 +58,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddSingleton<PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStudentService, StudentService>(); 
+builder.Services.AddScoped<ICourseService, CourseService>();
 
 var app = builder.Build();
 
@@ -72,7 +73,8 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapStudentEndpoints();    
+app.MapStudentEndpoints(); 
+app.MapCourseEndpoints();    
 
 app.MapGet("/", () => "MarksApi running");
 app.MapAuthEndpoints();
