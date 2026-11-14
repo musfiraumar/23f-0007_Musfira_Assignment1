@@ -59,6 +59,7 @@ builder.Services.AddSingleton<PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStudentService, StudentService>(); 
 builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 
 var app = builder.Build();
 
@@ -74,7 +75,8 @@ app.UseStatusCodePages();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapStudentEndpoints(); 
-app.MapCourseEndpoints();    
+app.MapCourseEndpoints(); 
+app.MapEnrollmentEndpoints();     
 
 app.MapGet("/", () => "MarksApi running");
 app.MapAuthEndpoints();
