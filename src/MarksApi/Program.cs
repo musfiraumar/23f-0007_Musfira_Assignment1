@@ -60,6 +60,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStudentService, StudentService>(); 
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 var app = builder.Build();
 
@@ -77,6 +78,7 @@ app.UseAuthorization();
 app.MapStudentEndpoints(); 
 app.MapCourseEndpoints(); 
 app.MapEnrollmentEndpoints();     
+app.MapReportEndpoints();
 
 app.MapGet("/", () => "MarksApi running");
 app.MapAuthEndpoints();
