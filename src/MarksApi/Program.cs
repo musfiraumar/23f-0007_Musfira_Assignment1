@@ -11,6 +11,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using MarksApi.SmokeTest;
+
+// Smoke-test mode: run the checks against a running API, then exit (no web server starts)
+if (args.Contains("--smoke-test"))
+{
+    Environment.ExitCode = await SmokeTestRunner.RunAsync();
+    return;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
