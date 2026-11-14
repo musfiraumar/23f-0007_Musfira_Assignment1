@@ -120,9 +120,4 @@ app.MapReportEndpoints();
 app.MapGet("/", () => "MarksApi running");
 app.MapAuthEndpoints();
 
-// TEMPORARY: delete after testing
-app.MapGet("/api/whoami", (ClaimsPrincipal user) =>
-    Results.Ok(new { name = user.Identity?.Name, role = user.FindFirst("role")?.Value }))
-    .RequireAuthorization();
-
 app.Run();
