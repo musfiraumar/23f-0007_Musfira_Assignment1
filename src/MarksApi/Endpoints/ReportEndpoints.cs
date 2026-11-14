@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using MarksApi.Infrastructure;
 using MarksApi.Services;
 
@@ -13,6 +14,11 @@ public static class ReportEndpoints
                 async (int courseId, IReportService service, CancellationToken ct) =>
                     (await service.GetCourseStatsAsync(courseId, ct)).ToHttpResult())
             .RequireAuthorization("TeacherOnly");
+
+        group.MapGet("/students/{id:int}/transcript",
+                async (int id, ClaimsPrincipal user, IReportService service, CancellationToken ct) =>
+                    (await service.GetTranscriptAsync(id, user, ct)).ToHttpResult())
+            .RequireAuthorization();
 
         return app;
     }
